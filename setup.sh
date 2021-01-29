@@ -74,7 +74,7 @@ fi
 ################################
 # Using CameraPi? By DavidMorp #
 ################################
-
+echo -e "\e[1;4;93mStep 4. Camera Setup\e[0m"
 read -r -p "Are you using a Camera Module? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     if ! grep -q bcm2835-v4l2 /etc/modules; then
@@ -92,7 +92,7 @@ fi
 #######################
 # Install RoadApplePi #
 #######################
-echo -e "\e[1;4;93mStep 4. Building and installing RoadApplePi\e[0m"
+echo -e "\e[1;4;93mStep 5. Building and installing RoadApplePi\e[0m"
 cd ..
 make
 make install

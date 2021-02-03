@@ -160,7 +160,7 @@ int main()
 				fileStr = malloc(strLength);
 				snprintf(fileStr, strLength, "/var/www/html/vids/%ld%03ld.mp4", tv.tv_sec, tv.tv_usec / 1000);
 
-				execl("/usr/local/bin/ffmpeg", "ffmpeg", "-y", "-i", "/dev/video0", "-c:v", "h264_omx", "-b:v", "5M", fileStr, (char *)NULL);
+				execl("/usr/local/bin/ffmpeg", "ffmpeg", "-y", "-i", "/dev/video0", "-c:v", "h264_omx", "-b:v", "5M", "-movflags", "faststart", fileStr, (char *)NULL);
 			}
 
 			//Let ffmpeg run for RECORDING_DURATION. Also do cache maintainence

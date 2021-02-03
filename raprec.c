@@ -36,7 +36,8 @@
 #include <errno.h>
 #include <linux/rtc.h>
 
-#define RECORDING_DURATION 300
+//#define RECORDING_DURATION 300
+#define RECORDING_DURATION 10
 #define MAX_DISK_USAGE 80
 #define MAX_OBD_SIZE 100
 

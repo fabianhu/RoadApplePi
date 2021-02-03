@@ -36,8 +36,7 @@
 #include <errno.h>
 #include <linux/rtc.h>
 
-//#define RECORDING_DURATION 300
-#define RECORDING_DURATION 10
+#define RECORDING_DURATION 300
 #define MAX_DISK_USAGE 80
 #define MAX_OBD_SIZE 100
 
@@ -161,6 +160,9 @@ int main()
 				fileStr = malloc(strLength);
 				snprintf(fileStr, strLength, "/var/www/html/vids/%ld%03ld.mp4", tv.tv_sec, tv.tv_usec / 1000);
 
+				// Added "-movflags faststart" to resolve issue;
+				// ffprobe [mov,mp4,m4a,3gp,3g2,mj2 @ 0x1a34b50] moov atom not found
+				// /var/www/html/vids/1612377724321.mp4: Invalid data found when processing input
 				execl("/usr/local/bin/ffmpeg", "ffmpeg", "-y", "-i", "/dev/video0", "-c:v", "h264_omx", "-b:v", "5M", "-movflags", "faststart", fileStr, (char *)NULL);
 			}
 

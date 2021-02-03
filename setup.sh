@@ -99,6 +99,7 @@ make install
 
 cp -r html /var/www/
 rm /var/www/html/index.html
+mkdir /var/www/html/vids
 chown -R www-data:www-data /var/www/html
 chmod -R 0755 /var/www/html
 cp raprec.service /lib/systemd/system
@@ -108,8 +109,6 @@ systemctl daemon-reload
 systemctl enable raprec
 #cp hostapd-rap.conf /etc/hostapd
 #cp dnsmasq.conf /etc
-mkdir /var/www/html/vids
-chown -R www-data:www-data /var/www/html
 
 installDate=$(date)
 cp roadapplepi.sql roadapplepi-configd.sql

@@ -39,8 +39,8 @@ apt upgrade -y
 # Install pre-built dependencies from Apt #
 ###########################################
 echo -e "\e[1;4;93mStep 2. Install pre-built dependencies from Apt\e[0m"
-apt install -y dnsmasq
-apt install -y hostapd
+#apt install -y dnsmasq
+#apt install -y hostapd
 apt install -y libbluetooth-dev
 apt install -y apache2
 apt install -y php7.3
@@ -51,7 +51,7 @@ apt install -y libmariadbclient-dev
 apt install -y libmariadbclient-dev-compat
 apt install -y uvcdynctrl
 
-systemctl disable hostapd dnsmasq
+#systemctl disable hostapd dnsmasq
 
 ################
 # Build FFMpeg #
@@ -106,8 +106,8 @@ chown root:root /lib/systemd/system/raprec.service
 chmod 0755 /lib/systemd/system/raprec.service
 systemctl daemon-reload
 systemctl enable raprec
-cp hostapd-rap.conf /etc/hostapd
-cp dnsmasq.conf /etc
+#cp hostapd-rap.conf /etc/hostapd
+#cp dnsmasq.conf /etc
 mkdir /var/www/html/vids
 chown -R www-data:www-data /var/www/html
 

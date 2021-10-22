@@ -375,7 +375,7 @@ function menuSelect(menuNumber)
 				pwLabel = document.createElement('span');
 				pwLabel.innerHTML = "Password: ";
 				password = document.createElement('input');
-				password.type = 'text';
+				password.type = 'password';
 				password.name = 'password';
 				password.id = 'password';
 				password.value = currentSettings["PSK"];
@@ -451,6 +451,28 @@ function menuSelect(menuNumber)
 					
 				};
 				timeList.appendChild(syncTime);
+				
+				//Recording
+				recLabel = document.createElement('div');
+				recLabel.className = 'settingsLabel';
+				recLabel.innerHTML = "Recording Management";
+				mainContent.appendChild(recLabel);
+		
+				recList = document.createElement('div');
+				recList.className = 'settingsList';
+				mainContent.appendChild(recList);
+		
+				stopButton = document.createElement('div');
+				stopButton.className = 'settingsItem';
+				stopButton.innerHTML = "<i class='fa fa-power-off' ></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stop Recording";
+				stopButton.onclick = function() { recManagement(0); };
+				recList.appendChild(stopButton);
+		
+				startButton = document.createElement('div');
+				startButton.className = 'settingsItem';
+				startButton.innerHTML = "<i class='fa fa-camera' ></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start Recording";
+				startButton.onclick = function() { recManagement(1); };
+				recList.appendChild(startButton);
 				
 				//Power Management
 				powerLabel = document.createElement('div');
@@ -621,6 +643,14 @@ function loadVideo(newVideo)
 			}
 		});
 	});
+}
+
+function recManagement(mode)
+{
+	url = "dataHandler.php?action=" + (mode == 0 ? "stopRecording" : "startRecording");
+	xhttp = new XMLHttpRequest();
+	xhttp.open("GET", url, true);
+	xhttp.send();
 }
 
 function powerManagement(mode)

@@ -40,6 +40,11 @@
 #define MAX_DISK_USAGE 80
 #define MAX_OBD_SIZE 100
 
+#define VIDEO_DEVICE "/dev/video0"
+#define FFMPEG_PATH "/usr/bin/ffmpeg"
+#define FFMPEG_INPUT_OPTS "-f v4l2 -s 1296x730"
+#define FFMPEG_OPTS "-y -c:v h264_omx -b:v 5M"
+
 //Global variables
 static volatile sig_atomic_t ffmpegPid = 0, recMgr = 0, obdLogger = 0, recRstrtFlag = 1, loggingOBD = 1, obdReset = 0;
 
@@ -60,6 +65,11 @@ static void forwardToOBDLogger(int signum __attribute__((unused)));
 static void fullObdDump(int signum __attribute__((unused)));
 static void recChldHandler(int, siginfo_t *, void *);
 
+const char *getenv_or(const char *key, const char *def) {
+	char *value = getenv(key);
+	return value==NULL ? def : value;
+}
+
 //Main Function
 int main()
 {
@@ -69,6 +79,11 @@ int main()
 	struct timeval setTime;
 	pid_t waitRslt;
 	int failCount, rtc;
+
+	const char *ffmpegPath = getenv_or("FFMPEG_PATH", FFMPEG_PATH);
+	const char *ffmpegInputOpts = getenv_or("FFMPEG_INPUT_OPTS", FFMPEG_INPUT_OPTS);
+	const char *ffmpegOpts = getenv_or("FFMPEG_OPTS", FFMPEG_OPTS);
+	const char *videoDevice = getenv_or("VIDEO_DEVICE", VIDEO_DEVICE);
 
 	//Set up syslog
 	openlog("RoadApplePi", 0, LOG_DAEMON);
@@ -108,12 +123,12 @@ int main()
 	{
 		int i, strLength, firstRun = 1;
 		unsigned int startTime;
-		char *fileStr;
+		char *cmdStr;
 		SigAction recIntAction, chldHandler;
 
 		//Check if webcam exists
 		failCount = 0;
-		while(access("/dev/video0", F_OK) == -1 && failCount < 60)
+		while(access(videoDevice, F_OK) == -1 && failCount < 60)
 		{
 			sleep(1);
 			failCount++;
@@ -153,12 +168,9 @@ int main()
 				dup2(fd, 2);
 				close(fd);
 
-				//Build filename as date in milliseconds
+				// Use the time of day for a timestamped filename.
 				struct timeval tv;
 				gettimeofday(&tv, NULL);
-				strLength = snprintf(NULL, 0, "/var/www/html/vids/%ld%03ld.mp4", tv.tv_sec, tv.tv_usec / 1000) + 1;
-				fileStr = malloc(strLength);
-				snprintf(fileStr, strLength, "/var/www/html/vids/%ld%03ld.mp4", tv.tv_sec, tv.tv_usec / 1000);
 
 				// Added "-movflags faststart" to resolve issue;
 				// ffprobe [mov,mp4,m4a,3gp,3g2,mj2 @ 0x1a34b50] moov atom not found

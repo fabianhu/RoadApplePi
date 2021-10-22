@@ -19,9 +19,15 @@ This script will download, compile, and install the necessary dependencies
 before finishing installing RoadApplePi itself. Depending on your model of
 Raspberry Pi, this may take several hours.
 "
+#!/bin/bash
+if [ $# -ge 1 ]
+then
+    $answer = $1
+else
+    #Prompt user if they want to continue
+	read -p "Would you like to continue? (y/N) " answer
+fi
 
-#Prompt user if they want to continue
-read -p "Would you like to continue? (y/N) " answer
 if [ "$answer" == "n" ] || [ "$answer" == "N" ] || [ "$answer" == "" ]
 then
 	echo "Setup aborted"
@@ -39,19 +45,9 @@ apt upgrade -y
 # Install pre-built dependencies from Apt #
 ###########################################
 echo -e "\e[1;4;93mStep 2. Install pre-built dependencies from Apt\e[0m"
-#apt install -y dnsmasq
-#apt install -y hostapd
-apt install -y libbluetooth-dev
-apt install -y apache2
-apt install -y php7.3
-apt install -y php7.3-mysql
-apt install -y php7.3-bcmath
-apt install -y mariadb-server
-apt install -y libmariadbclient-dev
-apt install -y libmariadbclient-dev-compat
-apt install -y uvcdynctrl
-
-#systemctl disable hostapd dnsmasq
+sudo apt install -y dnsmasq hostapd libbluetooth-dev apache2 php7.3 php7.3-mysql php7.3-bcmath mariadb-server libmariadbclient-dev libmariadbclient-dev-compat uvcdynctrl
+#sudo systemctl disable hostapd dnsmasq
+sudo apt install -y ffmpeg
 
 ################
 # Build FFMpeg #
@@ -92,8 +88,7 @@ fi
 #######################
 # Install RoadApplePi #
 #######################
-echo -e "\e[1;4;93mStep 5. Building and installing RoadApplePi\e[0m"
-cd ..
+echo -e "\e[1;4;93mStep 4. Building and installing RoadApplePi\e[0m"
 make
 make install
 
@@ -109,6 +104,14 @@ systemctl daemon-reload
 systemctl enable raprec
 #cp hostapd-rap.conf /etc/hostapd
 #cp dnsmasq.conf /etc
+
+# Enable SSL and HTTP => HTTPS redirect.
+sudo install -o root -g root -m 0644 rewrite-ssl.conf /etc/apache2/sites-available
+sudo a2enmod ssl
+sudo a2ensite default-ssl
+sudo a2enmod rewrite
+sudo a2ensite rewrite-ssl
+sudo a2dissite 000-default
 
 installDate=$(date)
 cp roadapplepi.sql roadapplepi-configd.sql

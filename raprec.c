@@ -140,8 +140,8 @@ int main()
 		}
 
 		//Set UVC options for my webcam (MOST LIKELY WEBCAM SPECIFIC)
-		system("uvcdynctrl -s 'Exposure, Auto' -- 3");
-		system("uvcdynctrl -s 'Exposure, Auto Priority' -- 1");
+		//system("uvcdynctrl -s 'Exposure, Auto' -- 3");
+		//system("uvcdynctrl -s 'Exposure, Auto Priority' -- 1");
 
 		//When killed, kill ffmpeg
 		sigfillset(&recIntAction.sa_mask);
@@ -172,17 +172,10 @@ int main()
 				struct timeval tv;
 				gettimeofday(&tv, NULL);
 
-				//Build an FFMPEG command, with the timestamped filename.
-				strLength = snprintf(NULL, 0, "exec %s %s -i %s %s /var/www/html/vids/%ld%03ld.mp4", 
-						     ffmpegPath, ffmpegInputOpts, videoDevice, ffmpegOpts,
-						     tv.tv_sec, tv.tv_usec / 1000) + 1;
-				cmdStr = malloc(strLength);
-				snprintf(cmdStr, strLength, "exec %s %s -i %s %s /var/www/html/vids/%ld%03ld.mp4", 
-						     ffmpegPath, ffmpegInputOpts, videoDevice, ffmpegOpts,
-						     tv.tv_sec, tv.tv_usec / 1000);
-
-				// Run FFMPEG
-				execlp("sh", "sh", "-c", cmdStr, (char *)NULL);
+				// Added "-movflags faststart" to resolve issue;
+				// ffprobe [mov,mp4,m4a,3gp,3g2,mj2 @ 0x1a34b50] moov atom not found
+				// /var/www/html/vids/1612377724321.mp4: Invalid data found when processing input
+				execl("/usr/local/bin/ffmpeg", "ffmpeg", "-y", "-i", "/dev/video0", "-c:v", "h264_omx", "-b:v", "5M", "-movflags", "faststart", fileStr, (char *)NULL);
 			}
 
 			//Let ffmpeg run for RECORDING_DURATION. Also do cache maintainence

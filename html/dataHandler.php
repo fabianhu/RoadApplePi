@@ -271,6 +271,10 @@ if($_GET['action'] == 'pair')
 	exit();
 }
 
+//Recording management
+if($_GET['action'] == "stopRecording") system("raprun -v0");
+if($_GET['action'] == "startRecording") system("raprun -v1");
+
 //Power management
 if($_GET['action'] == "shutdown") system("raprun -s");
 if($_GET['action'] == "restart") system("raprun -r");
